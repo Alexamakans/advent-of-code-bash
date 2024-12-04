@@ -1,0 +1,14 @@
+panic: error authenticating to SOC: Access Denied: The Personal Access Token used has expired.
+
+goroutine 1 [running]:
+main.(*source).auth(0x9cfbe0, {0x7e8f90, 0x9f7aa0})
+	/home/alex/dev/personal/pr-tracker/main.go:78 +0x10a
+main.main()
+	/home/alex/dev/personal/pr-tracker/main.go:85 +0x65
+panic: error authenticating to SOC: Access Denied: The Personal Access Token used has expired.
+
+goroutine 1 [running]:
+main.(*source).auth(0x9cfbe0, {0x7e8f90, 0x9f7aa0})
+	/home/alex/dev/personal/pr-tracker/main.go:78 +0x10a
+main.main()
+	/home/alex/dev/personal/pr-tracker/main.go:85 +0x65
