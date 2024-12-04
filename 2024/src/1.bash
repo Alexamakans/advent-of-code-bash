@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Day 1 - Part 1"
+echo "Day 1"
 
 left=()
 right=()
