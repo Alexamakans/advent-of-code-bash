@@ -8,8 +8,8 @@ SOURCE_DIR=$SCRIPT_ROOT/src
 
 if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then
   echo "Expected 1 or 2 arguments"
-  echo "${FILE}.bash <DAY>"
-  echo "${FILE}.bash test <DAY>"
+  echo "$0 <DAY>"
+  echo "$0 test <DAY>"
   exit 1
 fi
 
@@ -19,14 +19,14 @@ if [[ $DAY -eq 'test' ]]; then
   INPUT_DIR=$SCRIPT_ROOT/samples
 fi
 
-if [ ! -f "$INPUT_DIR/$DAY" ] && [ -f "$SCRIPT_ROOT/.env" ]; then
+if [ ! -f "$SCRIPT_ROOT/inputs/$DAY" ] && [ -f "$SCRIPT_ROOT/.env" ]; then
   . $SCRIPT_ROOT/.env
   if [ -z "$AOC_SESSION" ]; then
     echo "AOC_SESSION is not set"
     exit 1
   fi
   curl https://adventofcode.com/2024/day/$DAY/input --cookie "session=$AOC_SESSION" \
-    > $INPUT_DIR/$DAY
+    > $SCRIPT_ROOT/inputs/$DAY
 fi
 
 export INPUT="$(<$INPUT_DIR/$DAY)"
@@ -37,4 +37,4 @@ if [ ! -f "$SOURCE_DIR/${DAY}.bash" ]; then
   chmod +x $SOURCE_DIR/${DAY}.bash
 fi
 
-$SOURCE_DIR/${DAY}.bash
+time $SOURCE_DIR/${DAY}.bash

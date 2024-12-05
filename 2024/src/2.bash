@@ -1,99 +1,67 @@
 #!/usr/bin/env bash
 
+SUCCESS=0
+FAILED=1
+
 echo "Day 2"
 
+# Function to check if a sequence is "safe"
+function is_safe() {
+  parts=("$@")
+  ascending=$(( ${parts[0]} < ${parts[1]} ))
+  descending=$(( ${parts[0]} > ${parts[1]} ))
+  if [ $ascending -eq 0 ] && [ $descending -eq 0 ]; then
+    return $FAILED
+  fi
+  for ((i = 0; i < ${#parts[@]} - 1; i++)); do
+    difference=$((${parts[i]} - ${parts[i + 1]}))
+    if [ $difference -gt 0 ] && [ $ascending -eq 1 ]; then
+      return $FAILED
+    elif [ $difference -lt 0 ] && [ $ascending -eq 0 ]; then
+      return $FAILED
+    fi
+
+    if [ $difference -eq 0 ] || [ $difference -lt -3 ] || [ $difference -gt 3 ]; then
+      return $FAILED
+    fi
+  done
+  return $SUCCESS
+}
+
 function part_one() {
-  declare -i safes
-  safes=0
+  declare -i safes=0
   while IFS= read -r line; do
     parts=($line)
-    direction='NONE'
-    for ((i = 0; i < ${#parts[@]} - 1; i++)); do
-      declare -i difference
-      difference=$((${parts[$i]} - ${parts[$i + 1]}))
-      current_direction='NONE'
-      if [ $difference -lt 0 ]; then
-        current_direction='DOWN'
-      elif [ $difference -gt 0 ]; then
-        current_direction='UP'
-      fi
-
-      if [ $i -eq 0 ]; then
-        direction="$current_direction"
-      fi
-
-      if [ $current_direction = $direction ]; then
-        if [ $difference -lt -3 ] || [ $difference -gt 3 ]; then
-          break
-        fi
-
-        if [ $i -eq $((${#parts[@]} - 2)) ]; then
-          safes+=1
-        fi
-      else
-        break
-      fi
-    done
-  done < <(echo "$INPUT")
+    if is_safe "${parts[@]}"; then
+      safes+=1
+    fi
+  done <<< "$INPUT"
   echo "$safes"
 }
 
 function part_two() {
-  declare -i safes
-  safes=0
+  declare -i safes=0
   while IFS= read -r line; do
     all_parts=($line)
-    declare -i num_parts
     num_parts=${#all_parts[@]}
-    for ((to_skip = -1; to_skip < $num_parts; to_skip++)); do
-      direction='NONE'
-      done_with_line=false
+    for ((to_skip = -1; to_skip < num_parts; to_skip++)); do
       parts=()
-      for ((i=0; i < $num_parts; i++)); do
-        if [ $i -eq $to_skip ]; then
-          continue
-        fi
-        parts+=(${all_parts[$i]})
-      done
-
-      for ((i = 0; i < ${#parts[@]} - 1; i++)); do
-        declare -i difference
-        difference=$((${parts[$i]} - ${parts[$i + 1]}))
-        current_direction='NONE'
-        if [ $difference -lt 0 ]; then
-          current_direction='DOWN'
-        elif [ $difference -gt 0 ]; then
-          current_direction='UP'
-        else
-          # They must always increase or decrease
-          break
-        fi
-
-        if [ $i -eq 0 ]; then
-          direction="$current_direction"
-        fi
-
-        if [ $current_direction = $direction ]; then
-          if [ $difference -lt -3 ] || [ $difference -gt 3 ]; then
-            break
-          fi
-
-          if [ $i -eq $((${#parts[@]} - 2)) ]; then
-            done_with_line=true
-            safes+=1
-          fi
-        else
-          break
+      for ((i = 0; i < num_parts; i++)); do
+        if [ $i -ne $to_skip ]; then
+          parts+=("${all_parts[$i]}")
         fi
       done
-      if [ $done_with_line = true ]; then
+
+      if is_safe "${parts[@]}"; then
+        safes+=1
         break
       fi
     done
-  done < <(echo "$INPUT")
+  done <<< "$INPUT"
   echo "$safes"
 }
 
+# Main execution
 echo "  Part 1"
 echo "    Safes: $(part_one)"
 
